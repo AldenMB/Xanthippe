@@ -1,6 +1,6 @@
 {
   "board": {
-    "active_layer": 0,
+    "active_layer": 37,
     "active_layer_preset": "",
     "auto_track_width": true,
     "hidden_nets": [
@@ -65,8 +65,8 @@
       36,
       37
     ],
-    "visible_layers": "fff1fff_ffffffff",
-    "zone_display_mode": 1
+    "visible_layers": "fff1fff_7ffffffe",
+    "zone_display_mode": 0
   },
   "meta": {
     "filename": "calculator_interface.kicad_prl",
