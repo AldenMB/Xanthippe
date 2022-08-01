@@ -38,9 +38,8 @@ def shift_in_lcd():
     """
     clock = 0b01
     nsample = 0b10
-    for loop_number, (trigger_pin, condition) in enumerate(
-        [(1, 1), (1, 0), (2, 1), (2, 0)]
-    ):
+    loop_number = 0
+    for trigger_pin, condition in [(1, 1), (1, 0), (2, 1), (2, 0)]:
         wait(condition, pin, trigger_pin)
 
         set(x, 31).side(nsample | 0)
@@ -48,6 +47,7 @@ def shift_in_lcd():
         in_(pins, 1).side(nsample | clock)
         jmp(x_dec, loop_number).side(nsample | 0)
         push(noblock).side(0 | 0)
+        loop_number += 1
 
     irq(rel(0))
 
