@@ -1869,10 +1869,10 @@
       (reference "R32") (unit 1) (value "100K") (footprint "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal")
     )
     (path "/71d0dc84-7171-4335-a3dc-77322bcbe656/cd7c1725-d71a-4d6f-aacf-8575a64f94f0"
-      (reference "R33") (unit 1) (value "100K") (footprint "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal")
+      (reference "R33") (unit 1) (value "100R") (footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
     )
     (path "/71d0dc84-7171-4335-a3dc-77322bcbe656/c230fac5-5a0d-4078-80e9-d2135dcfbc3d"
-      (reference "R34") (unit 1) (value "100K") (footprint "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal")
+      (reference "R34") (unit 1) (value "100R") (footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
     )
     (path "/3bdaeadb-2cc9-440e-86dd-a7f0bb4f1cec"
       (reference "U1") (unit 1) (value "MCP1700-1502E/TO") (footprint "Package_TO_SOT_THT:TO-92_Inline")

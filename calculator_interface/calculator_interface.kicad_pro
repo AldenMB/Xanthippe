@@ -406,6 +406,26 @@
         "line_style": 0,
         "microvia_diameter": 0.6604,
         "microvia_drill": 0.3302,
+        "name": "Reference",
+        "nets": [
+          "/LCD Reading/Comparator reference"
+        ],
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.508,
+        "via_diameter": 0.6604,
+        "via_drill": 0.3302,
+        "wire_width": 6.0
+      },
+      {
+        "bus_width": 12.0,
+        "clearance": 0.1524,
+        "diff_pair_gap": 0.25,
+        "diff_pair_via_gap": 0.25,
+        "diff_pair_width": 0.2,
+        "line_style": 0,
+        "microvia_diameter": 0.6604,
+        "microvia_drill": 0.3302,
         "name": "Signal",
         "nets": [
           "/Keypad Driving/A0",
@@ -511,7 +531,6 @@
           "/LCD Reading/LCD-8",
           "/LCD Reading/LCD-9",
           "/LCD Reading/~{SAMPLE}",
-          "Net-(C17-Pad1)",
           "Net-(Q1-Pad1)",
           "Net-(U11-Pad10)",
           "Net-(U14-Pad9)",
