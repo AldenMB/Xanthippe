@@ -1,0 +1,4 @@
+(fp_lib_table
+  (lib (name "button_presser")(type "KiCad")(uri "C:/Users/alden/Documents/git projects/Xanthippe/button_presser")(options "")(descr ""))
+  (lib (name "Library")(type "KiCad")(uri "${KIPRJMOD}/Library.pretty")(options "")(descr ""))
+)
