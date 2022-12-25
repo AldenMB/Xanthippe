@@ -13,8 +13,13 @@ default_pins = {
 
 
 class LCD:
+    """
+    Minimal driver for HD44780 character display.
+    backlight pin is connected to a transistor, which turns
+    the backlight on when high
+    """
     def __init__(self, pins=default_pins):
-        self.led = gpiozero.PWMLED(pins["led"])
+        self.backlight = gpiozero.PWMLED(pins["led"])
         self.data = [
             gpiozero.DigitalOutputDevice(pins[p]) for p in "d4 d5 d6 d7".split()
         ]
@@ -32,7 +37,7 @@ class LCD:
         ]:
             self.send_byte(byte)
         self.clear()
-        self.led.value = 0.1
+        self.backlight.value = 0.1
 
     def clear(self):
         self.select.off()
@@ -45,7 +50,11 @@ class LCD:
         return self
 
     def clockpulse(self):
-        time.sleep(0.0001)
+        """
+        The sleep constants were determined empirically.
+        The data is sent on a falling edge, so we only
+        need a buffer around that.
+        """
         self.clock.on()
         time.sleep(0.0005)
         self.clock.off()
