@@ -1,12 +1,61 @@
 import gpiozero
 import time
+from dataclasses import dataclass
 
 
-def regroup_reading_bits(partial_readings):
-    data = bytearray(14)
-    for reading_number, (timestamp, reading) in enumerate(partial_readings):
-        for i in range(14):
-            data[i] |= reading
+def normalize_reading(bits):
+    """
+    Pack the raw bits into one byte per segment. Discard the checksum.
+    
+    example:
+    >>> normalize_reading([0b00000000010000000000000000000111,\
+                           0b10000010100000000000000000001011,\
+                           0b10000011110000000000000000001101,\
+                           0b00000001100000000000000000001110]).hex(' ')
+    '60 00 00 63 7a 00 00 00 00 00 00 00 00 00'
+    """
+    rows = [f'{x>>4:028b}' for x in bits]
+    columns = zip(*rows)
+    paired = zip(*[iter(columns)]*2)
+    return bytes(int(''.join(a+b), base=2) for a, b in paired)
+    
+@dataclass
+class LogEntry:
+    """one thing that has been shown on screen"""
+    shown: int
+    start: int
+    end: int = None
+    
+    def close(self, time):
+        if self.end is None:
+            self.end = time
+
+
+class LCDLog:
+    def __init__(self):
+        self.history = []
+        self.showing = None
+        self.most_recent_beat = None
+        self.pulserate = 24_000_000 # 24 milliseconds -> nanoseconds
+    
+    
+    def append(self, reading):
+        (time, *_), bits = zip(*reading)
+        showing = normalize_reading(bits)
+        if self.showing == showing and time - self.most_recent_beat < 1.5*self.pulserate:
+            self.most_recent_beat = time
+            return
+        
+        try:
+            self.history[-1].close(time)
+        except IndexError:
+            pass
+            
+        self.history.append(LogEntry(showing, time))
+        self.showing = showing
+        self.most_recent_beat = time
+
+
 
 class LCDReader:
     def __init__(self):
