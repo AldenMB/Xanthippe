@@ -38,10 +38,9 @@ class LCDReader:
                 return
             
         partial = self.acquire()
-        checksum = partial & 15
+        checksum = 15 & ~partial
         if checksum != 8 >> i:
-            pass
-            #print(f'warning! acquired data {partial:032b} on trigger {i}')
+            return
         
         self.partial_readings.append((now, partial))
         if i == 3:
@@ -62,4 +61,22 @@ class LCDReader:
         
         
 if __name__ == "__main__":
+    from buttonpress import ButtonPresser
+    bp = ButtonPresser()
+    
+    bp.send('3') # reset
+    time.sleep(0.5)
+    bp.send('4') # on
+    time.sleep(0.5)
+    bp.send('b') # 3
+    time.sleep(0.5)
+    
     reader = LCDReader()
+    time.sleep(0.25)
+    
+    print(f'{len(reader.reading_log)=}')
+    distinct = set(tuple(list(zip(*entry))[1]) for entry in reader.reading_log)
+    print('\n'.join(f'{x:032b}' for dd in distinct for x in dd))
+    
+    
+    
