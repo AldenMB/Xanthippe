@@ -19,7 +19,7 @@ class LCDReader:
         for i, trig in enumerate(self.triggers):
             def interrupt(*args, i=i):
                 self.on_interrupt(i)
-            trig.when_activated = interrupt
+            trig.when_deactivated = interrupt
         
         self.partial_readings = []
         self.reading_log = []
@@ -52,7 +52,7 @@ class LCDReader:
     def acquire(self):
         result = 0
         self.sample.off()
-        for i in range(31, 0, -1):
+        for i in range(31, -1, -1):
             result |= self.data.value << i
             self.clock.off()
             self.clock.on()
