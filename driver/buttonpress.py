@@ -10,7 +10,7 @@ class ButtonPresser:
             gpiozero.OutputDevice(i) for i in range(22, 28)
         ]
         
-    def send(self, symbol, press_time = 0.25, between_time = 0.25):
+    def send(self, symbol, press_time = 0.05, between_time = 0.0):
         binary = binascii.a2b_base64("AAA" + symbol)[-1]
         values = (int(d) for d in f'{binary:06b}'[::-1])
         for pin, value in zip(self.data, values):

@@ -67,16 +67,23 @@ if __name__ == "__main__":
     bp.send('3') # reset
     time.sleep(0.5)
     bp.send('4') # on
-    time.sleep(0.5)
+    time.sleep(0.15)
     bp.send('b') # 3
-    time.sleep(0.5)
+    time.sleep(0.15)
+    bp.send('j') # 4
+    time.sleep(0.15)
     
     reader = LCDReader()
-    time.sleep(0.25)
+    time.sleep(0.5)
     
     print(f'{len(reader.reading_log)=}')
     distinct = set(tuple(list(zip(*entry))[1]) for entry in reader.reading_log)
-    print('\n'.join(f'{x:032b}' for dd in distinct for x in dd))
+    result = '\n'.join(f'{x:032b}' for dd in distinct for x in dd)
+    print(result)
+    assert result == '''00000000010000000000000000000111
+10000010100000000000000000001011
+10000011110000000000000000001101
+00000001100000000000000000001110'''
     
     
     
