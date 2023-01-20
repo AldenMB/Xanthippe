@@ -25,8 +25,6 @@ def normalize_reading(bits):
 
 @dataclass
 class LogEntry:
-    """one thing that has been shown on screen"""
-
     shown: int
     start: int
     end: int = None
@@ -34,6 +32,12 @@ class LogEntry:
     def __post_init__(self):
         if self.end is None:
             self.end = self.start
+
+    def duration(self):
+        return (self.end - self.start) / 1e9
+
+    def __str__(self):
+        return f"{self.shown.hex(' ')}\nstart={self.start}\nend  ={self.end}\nduration={self.duration()} sec"
 
 
 class LCDReader:
@@ -55,24 +59,26 @@ class LCDReader:
         self.log = []
 
     def on_interrupt(self, i):
+        # get time ASAP, so that it is a more reliable number
         now = time.monotonic_ns()
-        if i == 0:
+
+        # make sure the partial readings are consistent
+        if (
+            i == 0
+            or len(self.partial_readings) != i
+            or now > 6_000_000 + self.partial_readings[-1][0]
+        ):
             self.partial_readings = []
-        else:
-            if len(self.partial_readings) != i:
-                self.partial_readings = []
-                return
-            then = self.partial_readings[-1][0]
-            if now - then > 6_000_000:
-                self.partial_readings = []
+            if i != 0:
                 return
 
+        # take a new reading
         partial = self.acquire()
         checksum = 15 & ~partial
         if checksum != 8 >> i:
             return
-
         self.partial_readings.append((now, partial))
+
         if i == 3:
             self.record()
             self.partial_readings = []
@@ -99,24 +105,29 @@ class LCDReader:
         self.sample.on()
         return result
 
+    def flush(self):
+        "clear the log"
+        self.log = self.log[-1:]
+
+    def showing(self):
+        now = time.monotonic_ns()
+        while time.monotonic_ns() - now < 5e8:  # listen for half a second
+            if self.log and now - self.log[-1].end < 2 * LCD_REFRESH_PERIOD:
+                return self.log[-1].shown
+            time.sleep(LCD_REFRESH_PERIOD / 1e9)
+
 
 if __name__ == "__main__":
     from buttonpress import ButtonPresser
 
     bp = ButtonPresser()
+    reader = LCDReader()
 
     bp.send("3")  # reset
+    reader.flush()
     bp.send("4")  # on
     bp.send("b")  # 3
     bp.send("j")  # 4
 
-    reader = LCDReader()
-    time.sleep(0.5)
-
-    print(f"{len(reader.log)=}")
-    print(f"{reader.log=}")
-
     for entry in reader.log:
-        print(entry.shown.hex(" "))
-        print(f"start={entry.start}")
-        print(f"duration={entry.end-entry.start}")
+        print(entry, end="\n\n")
