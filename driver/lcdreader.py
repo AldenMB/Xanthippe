@@ -115,6 +115,7 @@ class LCDReader:
             if self.log and now - self.log[-1].end < 2 * LCD_REFRESH_PERIOD:
                 return self.log[-1].shown
             time.sleep(LCD_REFRESH_PERIOD / 1e9)
+        return b'\00'*14
 
 
 if __name__ == "__main__":
