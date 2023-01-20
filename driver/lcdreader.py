@@ -109,9 +109,9 @@ class LCDReader:
         "clear the log"
         self.log = self.log[-1:]
 
-    def showing(self):
+    def showing(self, timeout=0.5):
         now = time.monotonic_ns()
-        while time.monotonic_ns() - now < 5e8:  # listen for half a second
+        while (time.monotonic_ns() - now) / 1e9 < timeout:
             if self.log and now - self.log[-1].end < 2 * LCD_REFRESH_PERIOD:
                 return self.log[-1].shown
             time.sleep(LCD_REFRESH_PERIOD / 1e9)
