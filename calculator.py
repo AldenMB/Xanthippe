@@ -61,7 +61,7 @@ class SevenSegment(int):
                 0b1110111: "A",
                 0b0001000: "_",
                 0b0001010: "=",
-                0b1001000: ",",
+                0b1001000: "/",
                 0b0100001: '"',
                 0b0000001: "'",
                 0b1000110: "n",
@@ -137,7 +137,7 @@ class Calculator:
         print(Screen(self.reader.showing()))
         while (b := input("press> ").strip()) in BUTTON_CODES:
             code = BUTTON_CODES[b]
-            msg = f"Pressed {b} ({code})".ljust(16)
+            msg = f"Pressed {b:<6}#{code}"
             print(msg)
             self.display.write(msg, line=0)
             msg = "waiting...".ljust(16)
@@ -147,7 +147,11 @@ class Calculator:
             self.presser.send(code)
 
             showing = self.reader.showing()
-            self.display.write(showing.hex(), line=1)
+            print(showing.hex(" "))
+            hex = showing.hex()
+            self.display.write(f"{code} {hex[:14]}", line=0)
+            self.display.write(f"  {hex[14:]}", line=1)
+            print(msg)
             print(Screen(showing))
 
 
