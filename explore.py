@@ -120,5 +120,5 @@ def random_after_requested(explorer):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     ex = Explorer()
-    for __ in range(10):
+    while True:
         ex.explore()
