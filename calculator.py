@@ -1,3 +1,8 @@
+"""
+>>> ''.join(BUTTON_CODES[b] for b in '2 + 3 = reset'.split())
+'TCbi3'
+"""
+
 from driver.display import LCD
 from driver.buttonpresser import ButtonPresser
 from driver.lcdreader import LCDReader
@@ -133,32 +138,50 @@ class Calculator:
         self.reader = LCDReader()
         self.presser = ButtonPresser()
 
+    def press(self, code):
+        name = BUTTON_NAMES[code]
+        self.display.write(f"{code} [{name}] Sent".ljust(16), line=0)
+        self.display.write("  Waiting to read".ljust(16), line=1)
+        self.presser.send(code)
+        showing = Screen(self.reader.showing())
+        hex = showing.hex()
+        self.display.write(f"{code}>{hex[:14]}", line=0)
+        self.display.write(f"  {hex[14:]}", line=1)
+        return showing
+
     def interactive(self):
         print(Screen(self.reader.showing()))
         while (b := input("press> ").strip()) in BUTTON_CODES:
             code = BUTTON_CODES[b]
-            msg = f"Pressed {b:<6}#{code}"
-            print(msg)
-            self.display.write(msg, line=0)
-            msg = "waiting...".ljust(16)
-            print(msg)
-            self.display.write(msg, line=1)
-
-            self.presser.send(code)
-
-            showing = self.reader.showing()
+            print(f"sending code {code}, waiting for response...")
+            showing = self.press(code)
             print(showing.hex(" "))
-            hex = showing.hex()
-            self.display.write(f"{code} {hex[:14]}", line=0)
-            self.display.write(f"  {hex[14:]}", line=1)
-            print(msg)
-            print(Screen(showing))
+            print(showing)
+
+    def session(self, codes):
+        """
+        >>> c = Calculator()
+        >>> for screen in c.session('TCbi3'):
+        ...     print(screen) # doctest:+NORMALIZE_WHITESPACE
+                                     DEG
+                       2
+                                     DEG
+                       2.
+                                     DEG
+                       3
+                                     DEG
+                       5.
+                                     DEG
+                       0.
+        """
+        codes = str(codes)
+        self.presser.send(BUTTON_CODES["reset"])
+        self.reader.flush()
+        # compute the whole list now so the calculator does
+        # not fall asleep
+        return [self.press(code) for code in codes]
 
 
 if __name__ == "__main__":
-    import doctest
-
-    doctest.testmod()
-
     c = Calculator()
     c.interactive()
