@@ -8,6 +8,7 @@ from driver.buttonpresser import ButtonPresser
 from driver.lcdreader import LCDReader
 import json
 from dataclasses import dataclass
+import logging
 
 with open("button_codes.json") as f:
     BUTTON_CODES = json.load(f)
@@ -186,7 +187,9 @@ class Calculator:
         screens = []
         for i, code in enumerate(codes):
             self.display.write(codes[:i] + "_", line=1)
+            scr = self.press(code)
             screens.append(self.press(code))
+            logging.info(f'{codes[:i+1]:<10} -> {scr.hex(" ")}')
 
         self.display.write(codes, line=1)
         return screens

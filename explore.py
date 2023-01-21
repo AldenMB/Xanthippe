@@ -2,6 +2,7 @@ import sqlite3
 from calculator import Calculator, BUTTON_CODES
 import random
 import itertools
+import logging
 
 BUTTONS = tuple(sorted(set(BUTTON_CODES.values()) - {BUTTON_CODES["reset"]}))
 strats = []
@@ -33,11 +34,14 @@ class Explorer:
     def get_target(self):
         while True:
             try:
-                target = next(random.choice(self.strats))
+                strat = random.choice(self.strats)
+                logging.info(f"choosing next target using strategy {strat.__name__}")
+                target = next(strat)
             except StopIteration:
                 self.strats.remove(strategy)
                 continue
             if target is not None and not self.already_covered(target):
+                logging.info(f"chose target {target}")
                 return target
 
     def explore(self):
@@ -45,14 +49,16 @@ class Explorer:
         screens = self.calculator.session(target)
         buttons = (target[:i] for i in range(1, len(target) + 1))
         data = ({"but": b, "scrn": bytes(s)} for b, s in zip(buttons, screens))
+        logging.info("saving session")
         with self.db:
-            self.db.executemany(
+            cur = self.db.executemany(
                 """INSERT INTO sessions(buttons, screen)
                 VALUES(:but, :scrn)
                 ON CONFLICT(buttons) WHERE screen IS NULL
                 DO UPDATE SET screen = :scrn""",
                 data,
             )
+            logging.info(f"wrote {cur.rowcount} rows")
 
 
 @strategy
@@ -65,7 +71,19 @@ def random_fixed_length(explorer, length=10):
 def alphabetical(explorer):
     for length in itertools.count(1):
         for combo in itertools.combinations_with_replacement(BUTTONS, length):
-            yield "".join(combo)
+            buttons = "".join(combo)
+            if not explorer.already_covered(buttons):
+                yield buttons
+
+
+@strategy
+def alphabetical_random_tail(explorer):
+    for length in itertools.count(1):
+        for combo in itertools.combinations_with_replacement(BUTTONS, length):
+            buttons = "".join(combo)
+            if not explorer.already_covered(buttons):
+                tail = "".join(random.choices(BUTTONS, k=10 - len(buttons)))
+                yield buttons + tail
 
 
 # @strategy
@@ -100,8 +118,7 @@ def random_after_requested(explorer):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     ex = Explorer()
     for __ in range(10):
         ex.explore()
-    for line in ex.db.iterdump():
-        print(line)
