@@ -138,15 +138,17 @@ class Calculator:
         self.reader = LCDReader()
         self.presser = ButtonPresser()
 
-    def press(self, code):
+    def press(self, code, show=False):
         name = BUTTON_NAMES[code]
-        self.display.write(f"{code} [{name}] Sent".ljust(16), line=0)
-        self.display.write("  Waiting to read".ljust(16), line=1)
+        if show:
+            self.display.write(f"{code} [{name}] Sent".ljust(16), line=0)
+            self.display.write("  Waiting...".ljust(16), line=1)
         self.presser.send(code)
         showing = Screen(self.reader.showing())
         hex = showing.hex()
-        self.display.write(f"{code}>{hex[:14]}", line=0)
-        self.display.write(f"  {hex[14:]}", line=1)
+        if show:
+            self.display.write(f"{code}>{hex[:14]}", line=0)
+            self.display.write(f"  {hex[14:]}", line=1)
         return showing
 
     def interactive(self):
@@ -154,7 +156,7 @@ class Calculator:
         while (b := input("press> ").strip()) in BUTTON_CODES:
             code = BUTTON_CODES[b]
             print(f"sending code {code}, waiting for response...")
-            showing = self.press(code)
+            showing = self.press(code, show=True)
             print(showing.hex(" "))
             print(showing)
 
@@ -179,7 +181,15 @@ class Calculator:
         self.reader.flush()
         # compute the whole list now so the calculator does
         # not fall asleep
-        return [self.press(code) for code in codes]
+        self.display.write(codes.ljust(16), line=0)
+        self.display.write(("." * len(codes)).ljust(16), line=1)
+        screens = []
+        for i, code in enumerate(codes):
+            self.display.write(codes[:i] + "_", line=1)
+            screens.append(self.press(code))
+
+        self.display.write(codes, line=1)
+        return screens
 
 
 if __name__ == "__main__":
