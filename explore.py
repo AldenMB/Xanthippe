@@ -86,7 +86,7 @@ def alphabetical_random_tail(explorer):
                 yield buttons + tail
 
 
-# @strategy
+@strategy
 def requested(explorer):
     while True:
         with explorer.db:
@@ -98,10 +98,11 @@ def requested(explorer):
             buttons = cur.fetchall()
         if not buttons:
             yield None
-        yield from buttons
+        for (b,) in buttons:
+            yield b
 
 
-# @strategy
+@strategy
 def random_after_requested(explorer):
     while True:
         with explorer.db:
