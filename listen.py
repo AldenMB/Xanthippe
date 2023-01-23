@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, send_file
 import sqlite3
 from explore import BUTTONS
 
@@ -40,6 +40,13 @@ def receive_buttons():
         app.logger.info(f"updated {cur.rowcount} entries of the database")
 
     return ""
+
+
+@app.route("/", methods=["GET"])
+def deliver_database():
+    return send_file(
+        "backup.csv.gz", as_attachment=True, attachment_filename="xanthippe.csv.gz"
+    )
 
 
 if __name__ == "__main__":
