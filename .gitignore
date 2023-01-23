@@ -132,3 +132,9 @@ dmypy.json
 ## Kicad
 *-backups
 fp-info-cache
+
+## working versions the database
+xanthippe.db
+backup.db
+backup.csv.gz
+
