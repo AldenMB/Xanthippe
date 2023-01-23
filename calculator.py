@@ -188,7 +188,7 @@ class Calculator:
         for i, code in enumerate(codes):
             self.display.write(codes[:i] + "_", line=1)
             scr = self.press(code)
-            screens.append(self.press(code))
+            screens.append(scr)
             logging.info(f'{codes[:i+1]:<10} -> {scr.hex(" ")}')
 
         self.display.write(codes, line=1)
