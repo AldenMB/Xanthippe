@@ -4,7 +4,7 @@ import sqlite3
 
 
 def decode(buttons):
-    return "".join(BUTTON_CODES[[b] for b in buttons.split(' '))
+    return "".join(BUTTON_CODES[b] for b in buttons.split(' '))
 
 def count(buttons, con):
     with con:
