@@ -16,7 +16,7 @@ class ButtonPresser:
         values = (int(d) for d in f"{binary:06b}"[::-1])
         for pin, value in zip(self.data, values):
             pin.value = value
-        self.enable.blink(on_time=0.05, off_time=0.1, n=1, background=False)
+        self.enable.blink(on_time=0.05, off_time=0.15, n=1, background=False)
         if symbol == "3":
             # reset takes additional time for some reason
             time.sleep(0.35)
