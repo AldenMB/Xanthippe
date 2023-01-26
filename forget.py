@@ -33,6 +33,9 @@ if __name__ == "__main__":
     if buttons:
         con = sqlite3.connect("xanthippe.db")
         affected = count(buttons, con)
-        confirm = input(f"This will affect {affected} entries. Are you sure? Type y to continue > ")
+        confirm = input(f"This will affect {affected} entries. Are you sure? Type y to continue > ").lower().strip()
         if confirm == 'y':
-            forget(buttons)
+            forget(buttons, con)
+            print("successfully forgot specificed entries")
+        else:
+            print("chose not to make changes")
