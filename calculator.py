@@ -9,6 +9,7 @@ from driver.lcdreader import LCDReader
 import json
 from dataclasses import dataclass
 import logging
+import time
 
 with open("button_codes.json") as f:
     BUTTON_CODES = json.load(f)
@@ -139,14 +140,20 @@ class Calculator:
         self.reader = LCDReader()
         self.presser = ButtonPresser()
 
-    def press(self, code, show=False):
+    def press(self, code, show=False, timeout_seconds=0):
         name = BUTTON_NAMES[code]
         if show:
             self.display.write(f"{code} [{name}] Sent".ljust(16), line=0)
             self.display.write("  Waiting...".ljust(16), line=1)
         self.presser.send(code)
         showing = Screen(self.reader.showing())
+
+        start_time = time.monotonic()
+        while showing == bytes(14) and time.monotonic() - start_time < timeout_seconds:
+            showing = Screen(self.reader.showing())
+
         hex = showing.hex()
+
         if show:
             self.display.write(f"{code}>{hex[:14]}", line=0)
             self.display.write(f"  {hex[14:]}", line=1)
@@ -185,9 +192,11 @@ class Calculator:
         self.display.write(codes.ljust(16), line=0)
         self.display.write(("." * len(codes)).ljust(16), line=1)
         screens = []
+        # I timed the calculator at 9 seconds to do 300 choose 150
+        timeout = 0 if BUTTON_CODES["OFF"] in codes else 10
         for i, code in enumerate(codes):
             self.display.write(codes[:i] + "_", line=1)
-            scr = self.press(code)
+            scr = self.press(code, timeout_seconds=timeout)
             screens.append(scr)
             logging.info(f'{codes[:i+1]:<10} -> {scr.hex(" ")}')
 
