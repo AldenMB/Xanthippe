@@ -93,6 +93,7 @@ def requested(explorer):
             cur = explorer.db.execute(
                 """SELECT buttons FROM sessions
                 WHERE requested = TRUE AND screen IS NULL
+                ORDER BY LENGTH(buttons) DESC
                 LIMIT 20"""
             )
             buttons = cur.fetchall()

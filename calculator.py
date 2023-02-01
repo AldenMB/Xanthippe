@@ -146,6 +146,7 @@ class Calculator:
             self.display.write(f"{code} [{name}] Sent".ljust(16), line=0)
             self.display.write("  Waiting...".ljust(16), line=1)
         self.presser.send(code)
+        time.sleep(0.25)
         showing = Screen(self.reader.showing())
 
         start_time = time.monotonic()
