@@ -187,6 +187,9 @@ class Calculator:
         """
         codes = str(codes)
         self.presser.send(BUTTON_CODES["reset"])
+        self.presser.send(BUTTON_CODES["OFF"])
+        self.presser.send(BUTTON_CODES["ON/C"])
+        self.presser.send(BUTTON_CODES["reset"])
         self.reader.flush()
         while (
             badread := self.reader.showing().hex()
@@ -196,6 +199,8 @@ class Calculator:
             )
             time.sleep(0.5)
             self.presser.send(BUTTON_CODES["reset"])
+            self.presser.send(BUTTON_CODES["OFF"])
+            self.presser.send(BUTTON_CODES["ON/C"])
         # compute the whole list now so the calculator does
         # not fall asleep
         self.display.write(codes.ljust(16), line=0)
