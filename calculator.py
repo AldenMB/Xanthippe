@@ -188,6 +188,14 @@ class Calculator:
         codes = str(codes)
         self.presser.send(BUTTON_CODES["reset"])
         self.reader.flush()
+        while (
+            badread := self.reader.showing().hex()
+        ) != "600000fd00000000000000000000":
+            logging.warning(
+                f"got a bad reset, showing {badread} instead of 600000fd00000000000000000000"
+            )
+            time.sleep(0.5)
+            self.presser.send(BUTTON_CODES["reset"])
         # compute the whole list now so the calculator does
         # not fall asleep
         self.display.write(codes.ljust(16), line=0)
