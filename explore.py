@@ -67,7 +67,7 @@ def random_fixed_length(explorer, length=10):
         yield "".join(random.choices(BUTTONS, k=length))
 
 
-@strategy
+#@strategy
 def alphabetical(explorer):
     for length in itertools.count(1):
         for combo in itertools.combinations_with_replacement(BUTTONS, length):
@@ -109,7 +109,7 @@ def random_after_requested(explorer):
         with explorer.db:
             cur = explorer.db.execute(
                 """SELECT buttons FROM sessions
-                WHERE requested = TRUE
+                WHERE requested = TRUE AND LENGTH(buttons) < 20
                 ORDER BY RANDOM()
                 LIMIT 1"""
             )
