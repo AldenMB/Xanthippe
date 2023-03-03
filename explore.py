@@ -15,7 +15,7 @@ def strategy(func):
 
 class Explorer:
     def __init__(self):
-        self.db = sqlite3.connect("xanthippe.db")
+        self.db = sqlite3.connect("xanthippe.db", timeout=3000)
         self.calculator = Calculator()
         self.strats = [strat(self) for strat in strats]
 
