@@ -28,7 +28,7 @@ def receive_buttons():
         )
     )
 
-    con = sqlite3.connect("xanthippe.db")
+    con = sqlite3.connect("xanthippe.db", timeout=3000)
     with con:
         cur = con.executemany(
             """INSERT INTO sessions(buttons, requested)
